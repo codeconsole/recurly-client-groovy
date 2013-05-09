@@ -137,6 +137,11 @@ public class Recurly {
         OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
         out.write(content)
         out.close()
+        if(!(httpConnection.responseCode in [200..399])){
+            String text = httpConnection.inputStream.text
+            log.warning("Post to $url returned response code $httpConnection.responseCode with message $httpConnection.responseMessage\n\n$text")
+            return parseXml(text)
+        }
         parseXml httpConnection.inputStream.text
     }
 
@@ -171,16 +176,26 @@ public class Recurly {
     public static GPathResult parseXml(String xml) {
         try {
             GPathResult result = new XmlSlurper().parseText(xml)
-             if (result.name() == "error") {
-                 if (result.symbol == 'not_found') {
-                     return null
-                 } else {
-                     throw new RuntimeException("${result.description}")
-                 }
-             }
+             throwExceptionOnError(result)
              return result
          } catch (FileNotFoundException fne) {
              return null
          }
+    }
+
+    static throwExceptionOnError(GPathResult result) {
+        if (result.name() == "error") {
+            if (result.symbol == 'not_found') {
+                return null
+            }
+            if(result.children().size() == 0 && result.text()){
+                throw new RecurlyException(result, result.@field.toString(), result.@symbol.toString(), "${result.text()}".toString())
+            }
+            throw new RecurlyException(result, result.field.toString(), result.symbol.toString(), "${result.description}: ${result.details}".toString())
+        }
+        if(result.name() == "errors"){
+            throwExceptionOnError(result.error[0])
+        }
+        return null
     }
 }

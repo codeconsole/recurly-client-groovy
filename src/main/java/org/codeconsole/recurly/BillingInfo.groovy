@@ -48,11 +48,8 @@ class BillingInfo {
         fromXml(Recurly.fetchXml("/accounts/${account_code}/billing_info"))
     }
     
-    String getNumber(){
-        if(number){
-            return number
-        }
-        first_six + last_four
+    boolean hasNumber(){
+        number
     }
     
     

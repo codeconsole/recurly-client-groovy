@@ -45,10 +45,22 @@ class Transaction {
                 if (a.billing_info) {
                     first_name(a.billing_info.first_name)
                     last_name(a.billing_info.last_name)
-                    number (a.billing_info.number)
-                    verification_value (a.billing_info.verification_value)
-                    month (a.billing_info.month)
-                    year (a.billing_info.year)
+                    if(a.billing_info.hasNumber()){
+                        billing_info(type: 'credit_card') {
+                            first_name(a.billing_info.first_name)
+                            last_name(a.billing_info.last_name)
+                            number (a.billing_info.number)
+                            verification_value (a.billing_info.verification_value)
+                            month (a.billing_info.month)
+                            year (a.billing_info.year)   
+                            address1(a.billing_info.address1)
+                            address2(a.billing_info.address2)
+                            city(a.billing_info.city)
+                            state(a.billing_info.state)
+                            zip(a.billing_info.zip)
+                            country(a.billing_info.country)
+                        }
+                    }
                 }
             }
         }
@@ -72,7 +84,7 @@ class Transaction {
              }
              return transaction
          }
-         null
+         Recurly.throwExceptionOnError(gPathResult)
      }
 
     static Transaction findByUuid(String uuid) {
