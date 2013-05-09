@@ -22,6 +22,7 @@ class BillingInfo {
     // Credit Card Attributes	Description
     String first_six	// Credit card number, first six digits
     String last_four	// Credit card number, last four digits
+    String number       // Credit card number
     String verification_value
     String card_type	// Visa, MasterCard, American Express, Discover, JCB, etc
     String month	    // Expiration month
@@ -46,4 +47,13 @@ class BillingInfo {
     static BillingInfo findByAccountCode(String account_code) {
         fromXml(Recurly.fetchXml("/accounts/${account_code}/billing_info"))
     }
+    
+    String getNumber(){
+        if(number){
+            return number
+        }
+        first_six + last_four
+    }
+    
+    
 }

@@ -128,6 +128,17 @@ public class Recurly {
         out.close()
         httpConnection.getResponseMessage()
     }
+    
+    public static GPathResult doPostWithXmlResponse(String url, String content) {
+        HttpURLConnection httpConnection = createXmlConnection("/${url}")
+        httpConnection.setDoOutput(true)
+        httpConnection.setDoOutput(true)
+        httpConnection.setRequestMethod("POST")
+        OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
+        out.write(content)
+        out.close()
+        parseXml httpConnection.inputStream.text
+    }
 
     public static InputStream fetchPdf(String url) {
         HttpURLConnection httpConnection = createConnection("/${url}")
@@ -154,8 +165,12 @@ public class Recurly {
     }
 
     public static GPathResult fetchXml(String url) {
+        parseXml fetchData(url)
+    }
+    
+    public static GPathResult parseXml(String xml) {
         try {
-            GPathResult result = new XmlSlurper().parseText(fetchData(url))
+            GPathResult result = new XmlSlurper().parseText(xml)
              if (result.name() == "error") {
                  if (result.symbol == 'not_found') {
                      return null

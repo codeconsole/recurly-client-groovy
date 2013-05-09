@@ -1,8 +1,10 @@
 package org.codeconsole.recurly
 
+import groovy.transform.Canonical
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 
+@Canonical
 class Transaction {
     String uuid	        // Unique transaction ID
     String action       // "purchase", "authorization", or "refund"
@@ -24,25 +26,29 @@ class Transaction {
     //  details	     Nested account and billing information submitted at the time of the transaction. When writing a client library, do not map these directly to Account or Billing Info objects.
 
     Account account
+    Invoice invoice
 
-    static boolean createTransaction(Account account, String amount_in_cents, String currency) {
-        Recurly.doPost('/transactions', makeXml(account, amount_in_cents, currency)) == "Created"
+    static Transaction createTransaction(Account account, String amount_in_cents, String currency, String description = null) {
+        fromXml Recurly.doPostWithXmlResponse('/transactions', makeXml(account, amount_in_cents, currency, description))
     }
 
-    static private String makeXml(Account a, String amt, String c) {
+    static private String makeXml(Account a, String amt, String c, String desc = null) {
         def output = new StringWriter()
         new MarkupBuilder(output).transaction() {
             amount_in_cents(amt)
             currency(c)
+            if(desc){
+                description desc
+            }
             account() {
                 account_code(a.account_code)
                 if (a.billing_info) {
                     first_name(a.billing_info.first_name)
                     last_name(a.billing_info.last_name)
-                    number (a.billing_info.first_six + a.billing_info.last_four)
+                    number (a.billing_info.number)
                     verification_value (a.billing_info.verification_value)
-                    month: (a.billing_info.month)
-                    year: (a.billing_info.year)
+                    month (a.billing_info.month)
+                    year (a.billing_info.year)
                 }
             }
         }
@@ -50,11 +56,16 @@ class Transaction {
     }
 
     static Transaction fromXml(GPathResult gPathResult) {
+        if(gPathResult == null){
+            return null
+        }
          if (gPathResult?.name() == 'transaction') {
              Transaction transaction = new Transaction()
              gPathResult.children().each {
                  if (it.name() == "account") {
                      transaction.account = Account.fromXml(Recurly.fetchXml(it.@href.text()[it.@href.text().indexOf('/accounts')..-1]))
+                 } else if (it.name() == "invoice") {
+                     transaction.invoice = Invoice.fromXml(Recurly.fetchXml(it.@href.text()[it.@href.text().indexOf('/invoices')..-1]), transaction.account)
                  } else if (transaction.metaClass.hasProperty(transaction, it.name())) {
                      transaction[it.name()] = it.text()
                  }

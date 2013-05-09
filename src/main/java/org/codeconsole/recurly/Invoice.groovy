@@ -25,12 +25,15 @@ class Invoice {
         Recurly.convertDate(created_at)
     }
 
-    static Invoice fromXml(GPathResult gPathResult) {
+    static Invoice fromXml(GPathResult gPathResult, Account account = null) {
         if (gPathResult?.name() == 'invoice') {
             Invoice invoice = new Invoice()
             gPathResult.children().each {
                 if (it.name() == "account") {
-                    invoice.account = Account.fromXml(Recurly.fetchXml(it.@href.text()[it.@href.text().indexOf('/accounts')..-1]))
+                    if(!account){
+                        account = Account.fromXml(Recurly.fetchXml(it.@href.text()[it.@href.text().indexOf('/accounts')..-1]))
+                    }
+                    invoice.account = account
                 } else if (invoice.metaClass.hasProperty(invoice, it.name())) {
                     invoice[it.name()] = it.text()
                 }
