@@ -98,8 +98,8 @@ public class Recurly {
         HttpURLConnection httpConnection = (HttpURLConnection) new URL("https://api.recurly.com/v2${url}").openConnection()
         httpConnection.setReadTimeout(45000)
         httpConnection.setConnectTimeout(45000)
-        String encodedLogin = new Base64().encodeToString("${apiKey}:".getBytes())
-        httpConnection.setRequestProperty("Authorization", "Basic ${URLEncoder.encode(encodedLogin)}")
+        String encodedLogin = URLEncoder.encode(new Base64().encodeToString("${apiKey}:".getBytes()))
+        httpConnection.setRequestProperty("Authorization", "Basic ${encodedLogin}")
         httpConnection
     }
 
