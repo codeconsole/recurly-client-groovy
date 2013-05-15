@@ -1,4 +1,8 @@
 apply plugin: 'groovy'
+apply plugin: 'maven'
+
+version = '1.0-SNAPSHOT'
+group = 'org.codeconsole'
 
 repositories {
     mavenCentral()
