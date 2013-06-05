@@ -5,3 +5,4 @@ src/main/java/org/codeconsole/recurly/Tests.groovy
 /.settings/
 /.classpath
 /.project
+/.gradle/
