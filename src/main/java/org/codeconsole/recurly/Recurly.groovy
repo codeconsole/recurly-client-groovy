@@ -14,6 +14,16 @@ import groovy.util.logging.Log
 public class Recurly {
     public static String apiKey
     public static String privateKey
+    
+    static String getApiKey(){
+        assert apiKey
+        apiKey
+    }
+    
+    static String getPrivateKey(){
+        assert privateKey
+        privateKey
+    }
 
     public String signSubscription(String planCode, String accountCode, Map extras = [:], long timestamp = (System.currentTimeMillis() / 1000 as long)) {
         return sign("subscriptioncreate", ["plan_code":planCode, "account_code":accountCode], extras, timestamp)
