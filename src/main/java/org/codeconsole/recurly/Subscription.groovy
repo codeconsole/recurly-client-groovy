@@ -6,8 +6,8 @@ import groovy.util.slurpersupport.GPathResult
 @Canonical
 class Subscription {
     Account account
-    String plan	            // Nested plan_code and plan name
-    String plan_code
+    String plan	            // plan's title
+    String plan_code        // plan's code
     String uuid	            // Unique subscription ID
     String state	        // "active", "canceled", "future", "expired", "modified"
     String unit_amount_in_cents	// Unit amount of the subscription
@@ -45,8 +45,8 @@ class Subscription {
          null
      }
     
-    static Subscription findBySubcriptionId(String id){
-        fromXml(Recurly.fetchXml("/subscriptions/$id"))
+    static Subscription findBySubcriptionId(String uuid){
+        fromXml(Recurly.fetchXml("/subscriptions/$uuid"))
     }
 
     static List<Subscription> findByAccountCode(String account_code) {
@@ -61,7 +61,7 @@ class Subscription {
     }
 
     static String cancelSubscription(String uuid) {
-        Recurly.doPut("subscriptions/${uuid}/cancel")
+        Recurly.doPut("/subscriptions/${uuid}/cancel")
     }
 
     static List<String> cancelSubscriptions(String account_code) {
