@@ -40,6 +40,10 @@ class Subscription {
          }
          null
      }
+    
+    static Subscription findBySubcriptionId(String id){
+        fromXml(Recurly.fetchXml("/subscriptions/$id"))
+    }
 
     static List<Subscription> findByAccountCode(String account_code) {
         List<Subscription> subscriptions = []
