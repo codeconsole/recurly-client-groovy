@@ -7,6 +7,7 @@ import groovy.util.slurpersupport.GPathResult
 class Subscription {
     Account account
     String plan	            // Nested plan_code and plan name
+    String plan_code
     String uuid	            // Unique subscription ID
     String state	        // "active", "canceled", "future", "expired", "modified"
     String unit_amount_in_cents	// Unit amount of the subscription
@@ -32,6 +33,9 @@ class Subscription {
              gPathResult.children().each {
                  if (it.name() == 'account') {
                      subscription.account = new Account(account_code: it.@href.text()[it.@href.text().indexOf('accounts/')+'accounts/'.length()..-1])
+                 } else if (it.name() == 'plan') {
+                     subscription.plan = it.name.text()
+                     subscription.plan_code = it.plan_code.text()
                  } else if (subscription.metaClass.hasProperty(subscription, it.name())) {
                      subscription[it.name()] = it.text()
                  }
