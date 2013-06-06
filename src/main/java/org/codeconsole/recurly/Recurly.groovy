@@ -126,6 +126,7 @@ public class Recurly {
         httpConnection.setRequestMethod("PUT")
         OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
         out.close()
+        httpConnection.getResponseCode()
         httpConnection.getResponseMessage()
     }
 
@@ -136,6 +137,7 @@ public class Recurly {
         OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
         out.write(content)
         out.close()
+        httpConnection.getResponseCode()
         httpConnection.getResponseMessage()
     }
     
