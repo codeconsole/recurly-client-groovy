@@ -56,7 +56,7 @@ public class Recurly {
     private String toQuery(object, String key = null) {
         (object instanceof Map)?
             object.collect { k, v -> toQuery(v, key? "${key}[${k}]" : k )}.sort().join("&")  :
-            "${URLEncoder.encode(key)}=${URLEncoder.encode(object.toString())}"
+            "${URLEncoder.encode(key, 'UTF-8')}=${URLEncoder.encode(object.toString(), 'UTF-8')}"
     }
 
     private String sha1hmacSha1(String key, String value) {
@@ -108,9 +108,8 @@ public class Recurly {
         HttpURLConnection httpConnection = (HttpURLConnection) new URL("https://api.recurly.com/v2${url}").openConnection()
         httpConnection.setReadTimeout(45000)
         httpConnection.setConnectTimeout(45000)
-        String encodedLogin = URLEncoder.encode(new Base64().encodeToString("${apiKey}:".getBytes()))
+        String encodedLogin = URLEncoder.encode(new Base64().encodeToString("${apiKey}:".getBytes()), 'UTF-8')
         httpConnection.setRequestProperty("Authorization", "Basic ${encodedLogin}")
-        log.info "Created connection: $httpConnection.URL"
         httpConnection
     }
 
