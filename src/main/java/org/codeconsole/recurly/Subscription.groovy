@@ -61,7 +61,7 @@ class Subscription {
     }
 
     static String cancelSubscription(String uuid) {
-        Recurly.doPut("/subscriptions/${uuid}/cancel")
+        Recurly.doPut("subscriptions/${uuid}/cancel")
     }
 
     static List<String> cancelSubscriptions(String account_code) {

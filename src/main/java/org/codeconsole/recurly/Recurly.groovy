@@ -110,6 +110,7 @@ public class Recurly {
         httpConnection.setConnectTimeout(45000)
         String encodedLogin = URLEncoder.encode(new Base64().encodeToString("${apiKey}:".getBytes()))
         httpConnection.setRequestProperty("Authorization", "Basic ${encodedLogin}")
+        log.info "Created connection: $httpConnection.URL"
         httpConnection
     }
 
