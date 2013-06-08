@@ -149,7 +149,7 @@ public class Recurly {
         OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
         out.write(content)
         out.close()
-        if(!(httpConnection.responseCode in [200..399])){
+        if(httpConnection.responseCode >= 400){
             String text = httpConnection.inputStream.text
             log.warning("Post to $url returned response code $httpConnection.responseCode with message $httpConnection.responseMessage\n\n$text")
             return parseXml(text)
