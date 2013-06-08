@@ -2,6 +2,7 @@ package org.codeconsole.recurly
 
 import groovy.transform.Canonical
 import groovy.util.slurpersupport.GPathResult
+import groovy.xml.MarkupBuilder
 
 @Canonical
 class Subscription {
@@ -45,6 +46,56 @@ class Subscription {
          null
      }
     
+    static private String makeXml(Account a, String plan, String c) {
+        def output = new StringWriter()
+        new MarkupBuilder(output).subscription() {
+            plan_code(plan)
+            currency(c)
+            account {
+                account_code(a.account_code)
+                first_name(a.first_name)
+                last_name(a.last_name)
+                if (a.billing_info) {
+                    if(a.billing_info.hasNumber()){
+                        billing_info(type: 'credit_card') {
+                            first_name(a.billing_info.first_name)
+                            last_name(a.billing_info.last_name)
+                            number (a.billing_info.number)
+                            if(a.billing_info.verification_value){
+                                verification_value (a.billing_info.verification_value)                                
+                            }
+                            if(a.billing_info.month){
+                                month (a.billing_info.month)                                
+                            }
+                            if(a.billing_info.year){
+                                year (a.billing_info.year)
+                            }
+                            if(a.billing_info.address1){
+                                address1 (a.billing_info.address1)
+                            }
+                            if(a.billing_info.address2){
+                                address2 (a.billing_info.address2)
+                            }
+                            if(a.billing_info.city){
+                                city (a.billing_info.city)
+                            }
+                            if(a.billing_info.state){
+                                state (a.billing_info.state)
+                            }
+                            if(a.billing_info.zip){
+                                zip (a.billing_info.zip)
+                            }
+                            if(a.billing_info.country){
+                                country (a.billing_info.country)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        output.toString()
+    }
+    
     static Subscription findBySubcriptionId(String uuid){
         fromXml(Recurly.fetchXml("/subscriptions/$uuid"))
     }
@@ -62,6 +113,10 @@ class Subscription {
 
     static String cancelSubscription(String uuid) {
         Recurly.doPut("subscriptions/${uuid}/cancel")
+    }
+    
+    static Subscription createSubscription(Account account, String plan, String currency){
+        fromXml Recurly.doPostWithXmlResponse('/subscriptions', makeXml(account, plan, currency))
     }
 
     static List<String> cancelSubscriptions(String account_code) {
