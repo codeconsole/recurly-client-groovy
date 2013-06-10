@@ -46,11 +46,14 @@ class Subscription {
          null
      }
     
-    static private String makeXml(Account a, String plan, String c) {
+    static private String makeXml(Account a, String plan, String c, boolean doNotRenew = false) {
         def output = new StringWriter()
         new MarkupBuilder(output).subscription() {
             plan_code(plan)
             currency(c)
+            if(doNotRenew){
+                total_billing_cycles(0)
+            }
             account {
                 account_code(a.account_code)
                 first_name(a.first_name)
