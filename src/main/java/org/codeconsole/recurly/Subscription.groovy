@@ -58,6 +58,7 @@ class Subscription {
                 account_code(a.account_code)
                 first_name(a.first_name)
                 last_name(a.last_name)
+                email(a.email)
                 if (a.billing_info) {
                     if(a.billing_info.hasNumber()){
                         billing_info(type: 'credit_card') {
