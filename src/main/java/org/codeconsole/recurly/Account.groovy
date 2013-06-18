@@ -32,6 +32,9 @@ class Account {
                     account[it.name()] = it.text()
                 }
             }
+            if(!account.billing_info){
+                account.billing_info = new BillingInfo()
+            }
             return account
         }
         null
