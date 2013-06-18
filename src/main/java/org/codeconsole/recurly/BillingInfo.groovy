@@ -52,5 +52,9 @@ class BillingInfo {
         number
     }
     
-    
+    // only return true in boolean tests if there is at least
+    // one of last_four, number, first_name or last_name properties present
+    boolean asBoolean(){
+        last_four || number ||  first_name || last_name
+    }
 }
