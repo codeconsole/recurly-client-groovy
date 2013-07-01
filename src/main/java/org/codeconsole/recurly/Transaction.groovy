@@ -45,6 +45,7 @@ class Transaction {
                 if (a.billing_info) {
                     first_name(a.billing_info.first_name)
                     last_name(a.billing_info.last_name)
+                    email(a.email)
                     if(a.billing_info.hasNumber()){
                         billing_info(type: 'credit_card') {
                             first_name(a.billing_info.first_name)

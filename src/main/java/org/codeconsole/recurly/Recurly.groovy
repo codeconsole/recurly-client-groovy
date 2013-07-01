@@ -141,6 +141,22 @@ public class Recurly {
         httpConnection.getResponseMessage()
     }
     
+    public static GPathResult doPutWithXmlResponse(String url, String content) {
+        HttpURLConnection httpConnection = createXmlConnection("/${url}")
+        httpConnection.setDoOutput(true)
+        httpConnection.setDoOutput(true)
+        httpConnection.setRequestMethod("PUT")
+        OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
+        out.write(content)
+        out.close()
+        if(httpConnection.responseCode >= 400){
+            String text = httpConnection.inputStream.text
+            log.warning("Post to $url returned response code $httpConnection.responseCode with message $httpConnection.responseMessage\n\n$text")
+            return parseXml(text)
+        }
+        parseXml httpConnection.inputStream.text
+    }
+    
     public static GPathResult doPostWithXmlResponse(String url, String content) {
         HttpURLConnection httpConnection = createXmlConnection("/${url}")
         httpConnection.setDoOutput(true)
