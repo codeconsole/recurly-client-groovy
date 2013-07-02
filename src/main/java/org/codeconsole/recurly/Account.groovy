@@ -46,7 +46,7 @@ class Account {
     }
     
     static Account updateAccount(Account a){
-        Recurly.doPutWithXmlResponse("/accounts/${a.account_code}", makeXml(a))
+        fromXml Recurly.doPutWithXmlResponse("/accounts/${a.account_code}", makeXml(a))
     }
     
     static private String makeXml(Account a) {
