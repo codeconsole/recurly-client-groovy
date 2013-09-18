@@ -144,7 +144,6 @@ public class Recurly {
     public static GPathResult doPutWithXmlResponse(String url, String content) {
         HttpURLConnection httpConnection = createXmlConnection("/${url}")
         httpConnection.setDoOutput(true)
-        httpConnection.setDoOutput(true)
         httpConnection.setRequestMethod("PUT")
         OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
         out.write(content)
@@ -159,7 +158,6 @@ public class Recurly {
     
     public static GPathResult doPostWithXmlResponse(String url, String content) {
         HttpURLConnection httpConnection = createXmlConnection("/${url}")
-        httpConnection.setDoOutput(true)
         httpConnection.setDoOutput(true)
         httpConnection.setRequestMethod("POST")
         OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
