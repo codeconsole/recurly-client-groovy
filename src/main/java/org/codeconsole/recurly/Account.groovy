@@ -49,6 +49,10 @@ class Account {
         fromXml Recurly.doPutWithXmlResponse("/accounts/${a.account_code}", makeXml(a))
     }
     
+    static Account createAccount(Account a){
+        fromXml Recurly.doPostWithXmlResponse("/accounts/${a.account_code}", makeXml(a))
+    }
+    
     static private String makeXml(Account a) {
         def output = new StringWriter()
         new MarkupBuilder(output).account {

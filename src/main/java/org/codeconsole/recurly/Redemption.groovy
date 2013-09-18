@@ -34,6 +34,6 @@ class Redemption {
             account_code    accountCode
             currency        curr
         }
-        fromXml Recurly.doPutWithXmlResponse("/coupons/${couponCode}/redeem}", output.toString())
+        fromXml Recurly.doPostWithXmlResponse("coupons/${couponCode}/redeem", output.toString())
     }
 }

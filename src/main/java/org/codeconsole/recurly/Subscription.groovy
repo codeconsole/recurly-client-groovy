@@ -47,12 +47,19 @@ class Subscription {
      }
     
     static private String makeXml(Account a, String plan, String c, boolean doNotRenew = false) {
+        makeXml(a, plan, c, null, doNotRenew)
+    }
+    
+    static private String makeXml(Account a, String plan, String c, String couponCode, boolean doNotRenew = false) {
         def output = new StringWriter()
         new MarkupBuilder(output).subscription() {
             plan_code(plan)
             currency(c)
             if(doNotRenew){
                 total_billing_cycles(0)
+            }
+            if (couponCode) {
+               coupon_code couponCode 
             }
             account {
                 account_code(a.account_code)
@@ -119,8 +126,8 @@ class Subscription {
         Recurly.doPut("subscriptions/${uuid}/cancel")
     }
     
-    static Subscription createSubscription(Account account, String plan, String currency){
-        fromXml Recurly.doPostWithXmlResponse('/subscriptions', makeXml(account, plan, currency))
+    static Subscription createSubscription(Account account, String plan, String currency, String couponCode = null){
+        fromXml Recurly.doPostWithXmlResponse('/subscriptions', makeXml(account, plan, currency, couponCode))
     }
 
     static List<String> cancelSubscriptions(String account_code) {
