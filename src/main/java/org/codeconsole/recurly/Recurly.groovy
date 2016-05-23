@@ -192,7 +192,11 @@ public class Recurly {
     }
 
     public static String fetchData(String url) {
-        createXmlConnection(url).getContent().text
+        try {        
+            createXmlConnection(url).getContent().text
+        } catch (FileNotFoundException fne) {
+            return null
+        }             
     }
 
     public static GPathResult fetchXml(String url) {
@@ -200,26 +204,22 @@ public class Recurly {
     }
     
     public static GPathResult parseXml(String xml) {
-        try {
-            GPathResult result = new XmlSlurper().parseText(xml)
-             throwExceptionOnError(result)
-             return result
-         } catch (FileNotFoundException fne) {
-             return null
-         }
+        GPathResult result = xml? new XmlSlurper().parseText(xml) : null
+        throwExceptionOnError(result)
+        return result
     }
 
     static throwExceptionOnError(GPathResult result) {
-        if (result.name() == "error") {
+        if (result?.name() == "error") {
             if (result.symbol == 'not_found') {
                 return null
             }
-            if(result.children().size() == 0 && result.text()){
+            if (result.children().size() == 0 && result.text()) {
                 throw new RecurlyException(result, result.@field.toString(), result.@symbol.toString(), "${result.text()}".toString())
             }
             throw new RecurlyException(result, result.field.toString(), result.symbol.toString(), "${result.description}: ${result.details}".toString())
         }
-        if(result.name() == "errors"){
+        if (result?.name() == "errors"){
             throwExceptionOnError(result.error[0])
         }
         return null
