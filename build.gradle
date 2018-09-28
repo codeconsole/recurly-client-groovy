@@ -1,15 +1,18 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: 'application'
 
 version = '1.0-SNAPSHOT'
 group = 'org.codeconsole'
+
+sourceCompatibility = 1.7
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.6'
+    compile 'org.codehaus.groovy:groovy-all:2.4.7'
     compile 'commons-codec:commons-codec:1.4'
     
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
@@ -23,6 +26,8 @@ sourceSets {
     }
 }
 
+mainClassName = "Tests"
+
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.13'
+    gradleVersion = '3.0'
 }
