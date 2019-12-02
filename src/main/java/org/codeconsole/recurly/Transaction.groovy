@@ -29,7 +29,7 @@ class Transaction {
     Invoice invoice
 
     static Transaction createTransaction(Account account, String amount_in_cents, String currency, String description = null) {
-        fromXml Recurly.doPostWithXmlResponse('/transactions', makeXml(account, amount_in_cents, currency, description))
+        fromXml Recurly.doPostWithXmlResponse('transactions', makeXml(account, amount_in_cents, currency, description))
     }
 
     static private String makeXml(Account a, String amt, String c, String desc = null) {

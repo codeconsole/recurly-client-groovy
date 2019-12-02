@@ -2,6 +2,7 @@ package org.codeconsole.recurly
 
 import groovy.transform.Canonical
 import groovy.util.slurpersupport.GPathResult
+import groovy.xml.MarkupBuilder
 
 @Canonical
 class BillingInfo {
@@ -42,19 +43,62 @@ class BillingInfo {
              return billingInfo
          }
          null
-     }
+    }
+
+    static private String makeXml(BillingInfo billingInfo) {
+        def output = new StringWriter()
+        new MarkupBuilder(output).billing_info(type: 'credit_card') {
+            first_name(billingInfo.first_name)
+            last_name(billingInfo.last_name)
+            if (billingInfo.number) {                            
+                number (billingInfo.number)
+            }
+            if (billingInfo.verification_value) {
+                verification_value (billingInfo.verification_value)                                
+            }
+            if (billingInfo.month) {
+                month (billingInfo.month)                                
+            }
+            if (billingInfo.year) {
+                year (billingInfo.year)
+            }
+            if (billingInfo.address1) {
+                address1 (billingInfo.address1)
+            }
+            if (billingInfo.address2) {
+                address2 (billingInfo.address2)
+            }
+            if (billingInfo.city) {
+                city (billingInfo.city)
+            }
+            if (billingInfo.state) {
+                state (billingInfo.state)
+            }
+            if (billingInfo.zip) {
+                zip (billingInfo.zip)
+            }
+            if (billingInfo.country) {
+                country (billingInfo.country)
+            }
+        }
+        output.toString()
+    }
 
     static BillingInfo findByAccountCode(String account_code) {
         fromXml(Recurly.fetchXml("/accounts/${account_code}/billing_info"))
     }
+
+    static BillingInfo updateBillingInfo(String account_code, BillingInfo billing_info) {
+        fromXml Recurly.doPostWithXmlResponse("/accounts/${account_code}/billing_info", makeXml(billing_info))
+    }        
     
-    boolean hasNumber(){
+    boolean hasNumber() {
         number
     }
     
     // only return true in boolean tests if there is at least
     // one of last_four, number, first_name or last_name properties present
-    boolean asBoolean(){
+    boolean asBoolean() {
         last_four || number ||  first_name || last_name
     }
 }

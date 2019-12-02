@@ -4,13 +4,15 @@ import groovy.transform.Canonical
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 
+// https://docs.recurly.com/docs/subscriptions
+
 @Canonical
 class Subscription {
     Account account
     String plan	            // plan's title
     String plan_code        // plan's code
     String uuid	            // Unique subscription ID
-    String state	        // "active", "canceled", "future", "expired", "modified"
+    String state	        // "active", "canceled", "future", "expired"
     String unit_amount_in_cents	// Unit amount of the subscription
     String quantity	            // Number of units
     String currency	            // 3-letter ISO currency for the subscription
@@ -113,7 +115,7 @@ class Subscription {
 
     static List<Subscription> findByAccountCode(String account_code) {
         List<Subscription> subscriptions = []
-        Recurly.fetchXml("/accounts/${account_code}/subscriptions").children().each {
+        Recurly.fetchXml("/accounts/${account_code}/subscriptions")?.children()?.each {
             Subscription subscription  = fromXml(it)
             if (subscription) {
                 subscriptions << subscription
@@ -127,7 +129,7 @@ class Subscription {
     }
     
     static Subscription createSubscription(Account account, String plan, String currency, String couponCode = null){
-        fromXml Recurly.doPostWithXmlResponse('/subscriptions', makeXml(account, plan, currency, couponCode))
+        fromXml Recurly.doPostWithXmlResponse('subscriptions', makeXml(account, plan, currency, couponCode))
     }
 
     static List<String> cancelSubscriptions(String account_code) {

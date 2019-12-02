@@ -140,35 +140,35 @@ public class Recurly {
         httpConnection.getResponseCode()
         httpConnection.getResponseMessage()
     }
+
+    public static String getText(HttpURLConnection httpConnection) {
+        try {
+            return httpConnection.inputStream.text
+        } catch (IOException ioe) {  // Response 422 will result in IOException. Get response from errorStream
+            return httpConnection.errorStream.text
+        }
+    }
     
     public static GPathResult doPutWithXmlResponse(String url, String content) {
-        HttpURLConnection httpConnection = createXmlConnection("/${url}")
-        httpConnection.setDoOutput(true)
-        httpConnection.setRequestMethod("PUT")
-        OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
-        out.write(content)
-        out.close()
-        if(httpConnection.responseCode >= 400){
-            String text = httpConnection.inputStream.text
-            log.warning("Post to $url returned response code $httpConnection.responseCode with message $httpConnection.responseMessage\n\n$text")
-            return parseXml(text)
-        }
-        parseXml httpConnection.inputStream.text
+        doMethodWithXmlResponse("PUT", url, content) 
     }
     
     public static GPathResult doPostWithXmlResponse(String url, String content) {
+        doMethodWithXmlResponse("POST", url, content) 
+    }
+
+    public static GPathResult doMethodWithXmlResponse(String method, String url, String content) {
         HttpURLConnection httpConnection = createXmlConnection("/${url}")
         httpConnection.setDoOutput(true)
-        httpConnection.setRequestMethod("POST")
+        httpConnection.setRequestMethod(method)
         OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
         out.write(content)
         out.close()
-        if(httpConnection.responseCode >= 400){
-            String text = httpConnection.inputStream.text
+        String text = getText(httpConnection)
+        if (httpConnection.responseCode >= 400) {
             log.warning("Post to $url returned response code $httpConnection.responseCode with message $httpConnection.responseMessage\n\n$text")
-            return parseXml(text)
-        }
-        parseXml httpConnection.inputStream.text
+        } 
+        parseXml text
     }
 
     public static InputStream fetchPdf(String url) {
