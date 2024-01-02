@@ -45,7 +45,7 @@ class Invoice {
 
     static List<Invoice> findByAccountCode(String account_code) {
         List<Invoice> invoices = []
-        Recurly.fetchXml("/accounts/${account_code}/invoices").children().each {
+        Recurly.fetchXml("/accounts/${account_code}/invoices")?.children()?.each {
             Invoice invoice = fromXml(it)
             if (invoice) {
                 invoices << invoice

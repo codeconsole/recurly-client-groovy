@@ -52,55 +52,56 @@ class Subscription {
         makeXml(a, plan, c, null, doNotRenew)
     }
     
-    static private String makeXml(Account a, String plan, String c, String couponCode, boolean doNotRenew = false) {
+    static private String makeXml(Account a, String plan, String c, String couponCode, boolean doNotRenew = false, Integer unitAmountInCents = null) {
         def output = new StringWriter()
         new MarkupBuilder(output).subscription() {
             plan_code(plan)
             currency(c)
-            if(doNotRenew){
+            if (doNotRenew) {
                 total_billing_cycles(0)
             }
             if (couponCode) {
                coupon_code couponCode 
+            }
+            if (unitAmountInCents != null) {
+                unit_amount_in_cents(unitAmountInCents)
             }
             account {
                 account_code(a.account_code)
                 first_name(a.first_name)
                 last_name(a.last_name)
                 email(a.email)
-                if (a.billing_info) {
-                    if(a.billing_info.hasNumber()){
-                        billing_info(type: 'credit_card') {
-                            first_name(a.billing_info.first_name)
-                            last_name(a.billing_info.last_name)
-                            number (a.billing_info.number)
-                            if(a.billing_info.verification_value){
-                                verification_value (a.billing_info.verification_value)                                
-                            }
-                            if(a.billing_info.month){
-                                month (a.billing_info.month)                                
-                            }
-                            if(a.billing_info.year){
-                                year (a.billing_info.year)
-                            }
-                            if(a.billing_info.address1){
-                                address1 (a.billing_info.address1)
-                            }
-                            if(a.billing_info.address2){
-                                address2 (a.billing_info.address2)
-                            }
-                            if(a.billing_info.city){
-                                city (a.billing_info.city)
-                            }
-                            if(a.billing_info.state){
-                                state (a.billing_info.state)
-                            }
-                            if(a.billing_info.zip){
-                                zip (a.billing_info.zip)
-                            }
-                            if(a.billing_info.country){
-                                country (a.billing_info.country)
-                            }
+                if(a.billing_info?.hasNumber()){
+                    billing_info(type: 'credit_card') {
+                        first_name(a.billing_info.first_name)
+                        last_name(a.billing_info.last_name)
+                        number (a.billing_info.number)
+                        if(a.billing_info.verification_value){
+                            verification_value (a.billing_info.verification_value)
+                        }
+                        if(a.billing_info.month){
+                            month (a.billing_info.month)
+                        }
+                        if(a.billing_info.year){
+                            year (a.billing_info.year)
+                        }
+                        if(a.billing_info.address1){
+                            address1 (a.billing_info.address1)
+                        }
+                        if(a.billing_info.address2){
+                            address2 (a.billing_info.address2)
+                        }
+                        if(a.billing_info.city){
+                            city (a.billing_info.city)
+                        }
+                        if(a.billing_info.state){
+                            state (a.billing_info.state)
+                        }
+                        if(a.billing_info.zip){
+                            zip (a.billing_info.zip)
+                        }
+                        if(a.billing_info.country){
+                            country (a.billing_info.country)
                         }
                     }
                 }
@@ -124,12 +125,16 @@ class Subscription {
         subscriptions
     }
 
+    static Subscription convertTrial(String uuid) {
+        fromXml Recurly.doPutWithXmlResponse("subscriptions/${uuid}/convert_trial", null)
+    }
+
     static String cancelSubscription(String uuid) {
         Recurly.doPut("subscriptions/${uuid}/cancel")
     }
     
-    static Subscription createSubscription(Account account, String plan, String currency, String couponCode = null){
-        fromXml Recurly.doPostWithXmlResponse('subscriptions', makeXml(account, plan, currency, couponCode))
+    static Subscription createSubscription(Account account, String plan, String currency, String couponCode = null, boolean doNotRenew = false, Integer unit_amount_in_cents = null) {
+        fromXml Recurly.doPostWithXmlResponse('subscriptions', makeXml(account, plan, currency, couponCode, doNotRenew, unit_amount_in_cents))
     }
 
     static List<String> cancelSubscriptions(String account_code) {

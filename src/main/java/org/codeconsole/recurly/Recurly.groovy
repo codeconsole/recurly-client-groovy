@@ -121,24 +121,27 @@ public class Recurly {
     }
 
     public static String doPut(String url) {
-        HttpURLConnection httpConnection = createXmlConnection("/${url}")
-        httpConnection.setDoOutput(true)
-        httpConnection.setRequestMethod("PUT")
-        OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
-        out.close()
-        httpConnection.getResponseCode()
-        httpConnection.getResponseMessage()
+        doMethod("PUT", url, null)
     }
 
     public static String doPost(String url, String content) {
+        doMethod("POST", url, content)
+    }
+
+    public static String doMethod(String method, String url, String content) {
         HttpURLConnection httpConnection = createXmlConnection("/${url}")
         httpConnection.setDoOutput(true)
-        httpConnection.setRequestMethod("POST")
+        httpConnection.setRequestMethod(method)
         OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
-        out.write(content)
+        if (content) {
+            out.write(content)
+        }
         out.close()
-        httpConnection.getResponseCode()
-        httpConnection.getResponseMessage()
+        String text = getText(httpConnection)
+        if (httpConnection.responseCode >= 400) {
+            log.warning("Post to $url returned response code $httpConnection.responseCode with message $httpConnection.responseMessage\n\n$text")
+        }
+        text
     }
 
     public static String getText(HttpURLConnection httpConnection) {
@@ -150,7 +153,7 @@ public class Recurly {
     }
     
     public static GPathResult doPutWithXmlResponse(String url, String content) {
-        doMethodWithXmlResponse("PUT", url, content) 
+        doMethodWithXmlResponse("PUT", url, content)
     }
     
     public static GPathResult doPostWithXmlResponse(String url, String content) {
@@ -158,17 +161,7 @@ public class Recurly {
     }
 
     public static GPathResult doMethodWithXmlResponse(String method, String url, String content) {
-        HttpURLConnection httpConnection = createXmlConnection("/${url}")
-        httpConnection.setDoOutput(true)
-        httpConnection.setRequestMethod(method)
-        OutputStreamWriter out = new OutputStreamWriter(httpConnection.getOutputStream())
-        out.write(content)
-        out.close()
-        String text = getText(httpConnection)
-        if (httpConnection.responseCode >= 400) {
-            log.warning("Post to $url returned response code $httpConnection.responseCode with message $httpConnection.responseMessage\n\n$text")
-        } 
-        parseXml text
+        parseXml doMethod(method, url, content)
     }
 
     public static InputStream fetchPdf(String url) {

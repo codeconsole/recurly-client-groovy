@@ -50,7 +50,7 @@ class Account {
     }
     
     static Account createAccount(Account a){
-        fromXml Recurly.doPostWithXmlResponse("/accounts/${a.account_code}", makeXml(a))
+        fromXml Recurly.doPostWithXmlResponse("/accounts", makeXml(a))
     }
     
     static private String makeXml(Account a) {
@@ -60,7 +60,7 @@ class Account {
             first_name(a.first_name)
             last_name(a.last_name)
             email(a.email)
-            if (a.billing_info) {
+            if (a.billing_info?.hasNumber()) {
                 billing_info(type: 'credit_card') {
                     first_name(a.billing_info.first_name)
                     last_name(a.billing_info.last_name)
