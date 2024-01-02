@@ -1,6 +1,7 @@
-apply plugin: 'groovy'
-apply plugin: 'maven'
-apply plugin: 'application'
+plugins {
+    id "groovy"
+    id "application"
+}
 
 version = '1.0-SNAPSHOT'
 group = 'org.codeconsole'
@@ -12,22 +13,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.15'
-    compile 'commons-codec:commons-codec:1.4'
-    
-    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
-}
-
-sourceSets {
-    main {
-        groovy {
-            srcDir 'src/main/java'
-        }
-    }
+    implementation 'org.codehaus.groovy:groovy-all:2.4.15'
+    implementation 'commons-codec:commons-codec:1.4'
 }
 
 mainClassName = "Tests"
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.0'
-}
